@@ -129,6 +129,7 @@ const IndexPage: React.FC = () => {
         indentWidth={indent}
         theme={theme}
         groupArraysAfterLength={groupArraysAfterLength}
+        maxDisplayLength={2}
         keyRenderer={KeyRenderer}
         valueTypes={[
           {

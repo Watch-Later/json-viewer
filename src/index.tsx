@@ -50,6 +50,7 @@ const JsonViewerInner: React.FC<JsonViewerProps> = (props) => {
     setIfNotUndefined('onChange', props.onChange)
     setIfNotUndefined('groupArraysAfterLength', props.groupArraysAfterLength)
     setIfNotUndefined('keyRenderer', props.keyRenderer)
+    setIfNotUndefined('maxDisplayLength', props.maxDisplayLength)
   }, [
     api,
     props.defaultInspectDepth,
@@ -57,6 +58,7 @@ const JsonViewerInner: React.FC<JsonViewerProps> = (props) => {
     props.keyRenderer,
     props.onChange,
     props.value,
+    props.maxDisplayLength,
     setIfNotUndefined])
 
   useEffect(() => {

@@ -15,6 +15,7 @@ export type JsonViewerState = {
   inspectCache: Record<string, boolean>
   hoverPath: { path: Path; nestedIndex?: number } | null
   groupArraysAfterLength: number
+  maxDisplayLength: number
   defaultInspectDepth: number
   colorNamespace: ColorNamespace
   expanded: string[]
@@ -38,6 +39,7 @@ export const createJsonViewerStore = () =>
         inspectCache: {},
         hoverPath: null,
         groupArraysAfterLength: 100,
+        maxDisplayLength: 30,
         rootName: 'root',
         defaultInspectDepth: 10,
         colorNamespace: lightColorNamespace,

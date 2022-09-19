@@ -7,6 +7,7 @@ import { useJsonViewerStore } from '../../stores/JsonViewerStore'
 import type { DataItemProps } from '../../type'
 import { DataKeyPair } from '../DataKeyPair'
 import { CircularArrowsIcon } from '../icons/CircularArrowsIcon'
+import { DataBox } from '../mui/DataBox'
 
 const objectLb = '{'
 const arrayLb = '['
@@ -82,6 +83,7 @@ export const PostObjectType: React.FC<DataItemProps<object>> = (props) => {
 
 export const ObjectType: React.FC<DataItemProps<object>> = (props) => {
   const keyColor = useTextColor()
+  const maxDisplayLength = useJsonViewerStore(store => store.maxDisplayLength)
   const groupArraysAfterLength = useJsonViewerStore(
     store => store.groupArraysAfterLength)
   const isTrap = useIsCycleReference(props.path, props.value)
@@ -89,16 +91,25 @@ export const ObjectType: React.FC<DataItemProps<object>> = (props) => {
     if (!props.inspect) {
       return null
     }
-    if (Array.isArray(props.value)) {
-      if (props.value.length <= groupArraysAfterLength) {
-        return props.value.map((value, index) => {
+    const value: unknown[] | object = props.value
+    if (Array.isArray(value)) {
+      // unknown[]
+      if (value.length <= groupArraysAfterLength) {
+        const elements = value.slice(0, maxDisplayLength).map((value, index) => {
           const path = [...props.path, index]
           return (
             <DataKeyPair key={index} path={path} value={value}/>
           )
         })
+        if (value.length > maxDisplayLength) {
+          const rest = value.length - maxDisplayLength
+          elements.push(
+            <DataBox>hidden {rest} items</DataBox>
+          )
+        }
+        return elements
       }
-      const value = props.value.reduce<unknown[][]>((array, value, index) => {
+      const elements = value.reduce<unknown[][]>((array, value, index) => {
         const target = Math.floor(index / groupArraysAfterLength)
         if (array[target]) {
           array[target].push(value)
@@ -108,21 +119,30 @@ export const ObjectType: React.FC<DataItemProps<object>> = (props) => {
         return array
       }, [])
 
-      return value.map((list, index) => {
+      return elements.map((list, index) => {
         const path = [...props.path]
         return (
           <DataKeyPair key={index} path={path} value={list} nestedIndex={index}/>
         )
       })
     } else {
-      return Object.entries(props.value).map(([key, value]) => {
+      // object
+      const entries = Object.entries(value)
+      const elements = entries.slice(0, maxDisplayLength).map(([key, value]) => {
         const path = [...props.path, key]
         return (
           <DataKeyPair key={key} path={path} value={value}/>
         )
       })
+      if (entries.length > maxDisplayLength) {
+        const rest = entries.length - maxDisplayLength
+        elements.push(
+          <DataBox>hidden {rest} items</DataBox>
+        )
+      }
+      return elements
     }
-  }, [props.inspect, props.value, props.path, groupArraysAfterLength])
+  }, [props.inspect, props.value, props.path, groupArraysAfterLength, maxDisplayLength])
   return (
     <Box
       className='data-object'
